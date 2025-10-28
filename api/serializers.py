@@ -9,7 +9,10 @@ class userserializer(serializers.ModelSerializer):
         extra_kwargs={'password':{'write_only':True}}
 
     def create(self,validated_data):
-        user=User.objects.create_user(**validated_data)
+        username = validated_data.get('username')
+        if User.objects.filter(username=username).exists():
+            raise serializers.ValidationError({"username": "This username is already taken."})
+        user = User.objects.create_user(**validated_data)
         return user
 
 class found_items_serializer(serializers.ModelSerializer):
